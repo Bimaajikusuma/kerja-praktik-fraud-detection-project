@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FraudDetection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2196F3;
+            color: white;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .title {
+            color: #1976D2;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .upload-section {
+            background: #E3F2FD;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .upload-title {
+            color: #1976D2;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .security-notice {
+            background: #BBDEFB;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #1565C0;
+            line-height: 1.3;
+        }
+
+        .upload-area {
+            border: 2px dashed #BDBDBD;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 12px;
+            opacity: 0.6;
+        }
+
+        .upload-text {
+            color: #757575;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .browse-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .file-info {
+            background: #E8F5E8;
+            border: 1px solid #4CAF50;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            color: #1976D2;
+            font-size: 16px;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .file-size {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .ready-status {
+            color: #4CAF50;
+            font-weight: 500;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .start-btn {
+            background: #FF9800;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reset-btn {
+            background: white;
+            color: #666;
+            border: 1px solid #DDD;
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .result-card {
+            background: #FAFAFA;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #EEEEEE;
+        }
+
+        .result-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .suspicious {
+            color: #F44336;
+        }
+
+        .normal {
+            color: #4CAF50;
+        }
+
+        .total {
+            color: #2196F3;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .export-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: #D6E4F0;
+            padding: 15px 20px;
+            color: #1976D2;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #DDD;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #DDD;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .attachment-section {
+            background: #E8F4FD;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .attachment-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+        }
+
+        .send-button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        @media (max-width: 600px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            FraudDetection
+        </div>
+        
+        <div class="content">
+            <div class="title">Fraud Detection Analisis</div>
+            <div class="subtitle">
+                Unggah data transaksi Anda untuk dianalisis dan mendeteksi aktivitas penipuan 
+                menggunakan algoritma pembelajaran mesin tingkat lanjut
+            </div>
+            
+            <div class="upload-section">
+                <div class="upload-title">Upload Data dan Memproses Data</div>
+                
+                <div class="security-notice">
+                    <strong>Pemberitahuan Keamanan :</strong> Semua data yang diunggah diproses dengan aman dan tidak disimpan secara permanen di server kami.
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M7 10l5 5 5-5"/>
+                            <path d="M12 15V3"/>
+                            <path d="M5 21h14"/>
+                        </svg>
+                    </div>
+                    <div class="upload-text">Drag and Drop your file<br>Atau</div>
+                    <button class="browse-btn">Browse File</button>
+                </div>
+                
+                <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display: none;">
+                
+                <div id="fileInfo" class="file-info hidden">
+                    <div class="file-icon">📄</div>
+                    <div class="file-details">
+                        <div class="file-name">DataSet 1.csv</div>
+                        <div class="file-size">Size : 100 MB | Status: <span class="ready-status">Ready for analysis</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="start-btn" onclick="startAnalysis()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M8 12h8"/>
+                        <path d="M12 8v8"/>
+                    </svg>
+                    Start Analysis
+                </button>
+                <button class="reset-btn" onclick="resetData()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                    Reset
+                </button>
+            </div>
+            
+            <div id="results" class="hidden">
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-number suspicious">167</div>
+                        <div class="result-label">Mencurigakan</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-number normal">167</div>
+                        <div class="result-label">Wajar</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-number total">334</div>
+                        <div class="result-label">Total Analisis</div>
+                    </div>
+                </div>
+                
+                <div class="export-buttons">
+                    <button class="export-btn">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        Export Excel
+                    </button>
+                    <button class="export-btn">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        Export PDF
+                    </button>
+                    <button class="export-btn" onclick="showEmailModal()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        Email Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeEmailModal()">&times;</span>
+                Email Fraud Detection Report
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Kepada</label>
+                    <input type="email" class="form-input" value="bimo.ajikusuma@gmail.com" placeholder="Email address">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Subjek</label>
+                    <input type="text" class="form-input" value="File Fraud detection" placeholder="Subject">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tulis email</label>
+                    <textarea class="form-textarea" placeholder="Ini File Fraud detection"></textarea>
+                </div>
+                
+                <div class="attachment-section">
+                    <div class="attachment-title">Sertakan Lampiran</div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="excelReport" checked>
+                            <label for="excelReport">Excel Report</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pdfReport" checked>
+                            <label for="pdfReport">PDF Report</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="send-button" onclick="sendEmail()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22,2 15,22 11,13 2,9 22,2"/>
+                    </svg>
+                    Kirim
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                const fileInfo = document.getElementById('fileInfo');
+                const fileName = fileInfo.querySelector('.file-name');
+                const fileSize = fileInfo.querySelector('.file-size');
+                
+                // Update file info with actual file details
+                fileName.textContent = file.name;
+                fileSize.innerHTML = `Size : ${(file.size / (1024*1024)).toFixed(1)} MB | Status: <span class="ready-status">Ready for analysis</span>`;
+                
+                // Show file info
+                fileInfo.classList.remove('hidden');
+            }
+        });
+
+        function startAnalysis() {
+            const fileInfo = document.getElementById('fileInfo');
+            const results = document.getElementById('results');
+            
+            // Check if file is uploaded
+            if (fileInfo.classList.contains('hidden')) {
+                alert('Silakan upload file terlebih dahulu!');
+                return;
+            }
+            
+            // Show loading state
+            const startBtn = document.querySelector('.start-btn');
+            startBtn.innerHTML = '<div style="width: 12px; height: 12px; border: 2px solid #fff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div> Analyzing...';
+            startBtn.disabled = true;
+            
+            // Simulate analysis process
+            setTimeout(() => {
+                // Show results
+                results.classList.remove('hidden');
+                
+                // Reset button state
+                startBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg> Start Analysis';
+                startBtn.disabled = false;
+                
+                // Add animation to results
+                const resultCards = document.querySelectorAll('.result-card');
+                resultCards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.5s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 200);
+                });
+            }, 3000); // 3 second simulation
+        }
+
+        function resetData() {
+            const fileInfo = document.getElementById('fileInfo');
+            const results = document.getElementById('results');
+            
+            // Clear file input and hide file info
+            document.getElementById('fileInput').value = '';
+            fileInfo.classList.add('hidden');
+            
+            // Hide results
+            results.classList.add('hidden');
+        }
+
+        function showEmailModal() {
+            document.getElementById('emailModal').style.display = 'block';
+        }
+
+        function closeEmailModal() {
+            document.getElementById('emailModal').style.display = 'none';
+        }
+
+        function sendEmail() {
+            alert('Email berhasil dikirim!');
+            closeEmailModal();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('emailModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Add CSS animation for spinner
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
